@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Jekyll plugin for image manipulation"
   spec.homepage = "https://github.com/shikhalev/shi-jekyll-images"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 2.7.7"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/shikhalev/shi-jekyll-images"
@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "jekyll", '>= 4.0', '< 5.0'
   spec.add_dependency "liquid", '~> 4.0'
-  spec.add_dependency "shi-args", "~> 0.2.6"
+  spec.add_dependency "shi-args", "~> 0.2.7"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
