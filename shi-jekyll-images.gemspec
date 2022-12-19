@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "jekyll", '>= 4.0', '< 5.0'
   spec.add_dependency "liquid", '~> 4.0'
-  spec.add_dependency "shi-args", "~> 0.2.5"
+  spec.add_dependency "shi-args", "~> 0.2.6"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
