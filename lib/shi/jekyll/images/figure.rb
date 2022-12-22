@@ -8,13 +8,16 @@ require "shi/args"
 
 class Shi::Jekyll::FigureBlock < Liquid::Block
 
+  include Jekyll::Filters::URLFilters
+
   # def initialize tag_name, markup, parse_context
   #   super tag_name, markup, parse_context
   # end
 
   def render(context)
-    args = Shi::Args::parse(@markup)
-    args.attach! context
+    args = Shi::Args::Params::parse(context, @markup)
+
+    pp args.to_h
 
     id = args[:id]
 
@@ -43,7 +46,14 @@ class Shi::Jekyll::FigureBlock < Liquid::Block
     link = args[:link]
 
     width = args[:width]
-    width = "#{width}px" if Numeric === width
+    width = Shi::Args::Value::Measure::px(width) if Numeric === width
+    img_width = args[:img_width]
+    img_width = Shi::Args::Value::Measure::px(img_width) if Numeric === img_width
+
+    height = args[:height]
+    height = Shi::Args::Value::Measure::px(height) if Numeric === height
+    img_height = args[:img_height]
+    img_height = Shi::Args::Value::Measure::px(img_height) if Numeric === img_height
 
     shape = args[:shape]
     img_shape = args[:img_shape]
@@ -57,7 +67,10 @@ class Shi::Jekyll::FigureBlock < Liquid::Block
     data = {
       id: id,
       place: place,
-      width: width,
+      width: img_width,
+      height: img_height,
+      fig_width: width,
+      fig_height: height,
       class: img_class,
       style: img_style,
       shape: img_shape,
@@ -76,30 +89,16 @@ class Shi::Jekyll::FigureBlock < Liquid::Block
 
     if text.match /^\s*#\s*(?<caption>.*?)(\n|$)/
       caption = $~[:caption]
+      text.gsub! /^\s*#\s*(?<caption>.*?)(\n|$)/, ''
     end
-    if caption
-      cap_attrs = ""
-      cap_attrs += " class=\"#{cap_class}\"" if cap_class
-      cap_attrs += " style=\"#{cap_style}\"" if cap_style
-      if caption_position == :top
-        text = "<figcaption markdown=\"span\"#{cap_attrs}>#{caption}</figcaption>\n#{text}"
-      else
-        text = "#{text}\n<figcaption markdown=\"span\"#{cap_attrs}>#{caption}</figcaption>"
-      end
-    end
-
     fig_class = 'shi_figure'
-    fig_class =+ " #{cls}" if cls
+    fig_class += " __shape_#{shape}" if String === shape
+    fig_class += " __place_#{place}"
+    fig_class += " #{cls}" if cls
     fig_attrs = " class=\"#{fig_class}\""
-    # if fig_style
-    #   if width
-    #     fig_style += "max-width:#{width};#{fig_style}"
-    #   else
-    #   end
-    # end
     fig_style ||= ''
-    fig_style += "width:#{width};" if width
-    # TODO: shape с развертыванием
+    fig_style += "max-width:#{width};" if width
+    fig_style += "shape-outside:url(#{relative_url(shape)});" if Jekyll::StaticFile === shape
     fig_attrs += " style=\"#{fig_style}\""
     if wrp_class
       wrp_class = "shi_figure_wrapper #{wrp_class}"
@@ -109,7 +108,18 @@ class Shi::Jekyll::FigureBlock < Liquid::Block
     wrp_attrs = " class=\"#{wrp_class}\""
     wrp_attrs += " style=\"#{wrp_style}\"" if wrp_style
 
-    "<figure markdown=\"0\"#{fig_attrs}><div#{wrp_attrs}>#{text}</div></figure>"
+    if caption
+      cap_attrs = ""
+      cap_attrs += " class=\"#{cap_class}\"" if cap_class
+      cap_attrs += " style=\"#{cap_style}\"" if cap_style
+      if caption_position == :top
+        text = "<figcaption markdown=\"span\"#{cap_attrs}>#{caption}</figcaption>\n<div#{wrp_attrs}>#{text}</div>"
+      else
+        text = "<div#{wrp_attrs}>#{text}</div>\n<figcaption markdown=\"span\"#{cap_attrs}>#{caption}</figcaption>"
+      end
+    end
+
+    "<figure markdown=\"0\"#{fig_attrs}>#{text}</figure>"
   end
 end
 

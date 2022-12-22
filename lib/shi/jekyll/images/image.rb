@@ -6,7 +6,8 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
 
   def render(context)
     puts "image start"
-    # pp context['current_figure']
+    pp context['current_figure']
+    nil
   end
 
 end
