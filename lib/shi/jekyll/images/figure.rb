@@ -1,20 +1,19 @@
 # encoding: utf-8
 
-require_relative "version"
+require_relative 'version'
 
-require "pp"
-require "shi/args"
+require 'pp'
+require 'shi/args'
 # require 'liquid/tag/disabler'
 
 class Shi::Jekyll::FigureBlock < Liquid::Block
-
   include Jekyll::Filters::URLFilters
 
   # def initialize tag_name, markup, parse_context
   #   super tag_name, markup, parse_context
   # end
 
-  def render(context)
+  def render context
     args = Shi::Args::Params::parse(context, @markup)
 
     pp args.to_h
@@ -78,25 +77,25 @@ class Shi::Jekyll::FigureBlock < Liquid::Block
       link: link,
       caption: caption,
       webp: webp,
-      thumb: thumb,
+      thumb: thumb
     }
 
     text = nil
     context.stack do
-      context["current_figure"] = data
+      context['current_figure'] = data
       text = super context
     end
 
-    if text.match /^\s*#\s*(?<caption>.*?)(\n|$)/
+    if text.match(/^\s*#\s*(?<caption>.*?)(\n|$)/)
       caption = $~[:caption]
-      text.gsub! /^\s*#\s*(?<caption>.*?)(\n|$)/, ''
+      text.gsub!(/^\s*#\s*(?<caption>.*?)(\n|$)/, '')
     end
     fig_class = 'shi_figure'
     fig_class += " __shape_#{shape}" if String === shape
     fig_class += " __place_#{place}"
     fig_class += " #{cls}" if cls
     fig_attrs = " class=\"#{fig_class}\""
-    fig_style ||= ''
+    fig_style = style || ''
     fig_style += "max-width:#{width};" if width
     fig_style += "shape-outside:url(#{relative_url(shape)});" if Jekyll::StaticFile === shape
     fig_attrs += " style=\"#{fig_style}\""
@@ -109,7 +108,7 @@ class Shi::Jekyll::FigureBlock < Liquid::Block
     wrp_attrs += " style=\"#{wrp_style}\"" if wrp_style
 
     if caption
-      cap_attrs = ""
+      cap_attrs = ''
       cap_attrs += " class=\"#{cap_class}\"" if cap_class
       cap_attrs += " style=\"#{cap_style}\"" if cap_style
       if caption_position == :top
@@ -123,4 +122,4 @@ class Shi::Jekyll::FigureBlock < Liquid::Block
   end
 end
 
-Liquid::Template.register_tag "figure", Shi::Jekyll::FigureBlock
+Liquid::Template.register_tag 'figure', Shi::Jekyll::FigureBlock
