@@ -1,21 +1,21 @@
 # encoding: utf-8
 
-require_relative "lib/shi/jekyll/images/version"
+require_relative 'lib/shi/jekyll/images/version'
 
 Gem::Specification.new do |spec|
-  spec.name = "shi-jekyll-images"
+  spec.name = 'shi-jekyll-images'
   spec.version = Shi::Jekyll::Images::VERSION
-  spec.authors = ["Иван Шихалев"]
-  spec.email = ["shikhalev@gmail.com"]
+  spec.authors = ['Иван Шихалев']
+  spec.email = ['shikhalev@gmail.com']
 
-  spec.summary = "Jekyll plugin for image manipulation"
-  spec.homepage = "https://github.com/shikhalev/shi-jekyll-images"
-  spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.7.7"
+  spec.summary = 'Jekyll plugin for image manipulation'
+  spec.homepage = 'https://github.com/shikhalev/shi-jekyll-images'
+  spec.license = 'MIT'
+  spec.required_ruby_version = '>= 2.7.7'
 
-  spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/shikhalev/shi-jekyll-images"
-  spec.metadata["changelog_uri"] = "https://github.com/shikhalev/shi-jekyll-images/blob/main/CHANGELOG.md"
+  spec.metadata['homepage_uri'] = spec.homepage
+  spec.metadata['source_code_uri'] = 'https://github.com/shikhalev/shi-jekyll-images'
+  spec.metadata['changelog_uri'] = 'https://github.com/shikhalev/shi-jekyll-images/blob/main/CHANGELOG.md'
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
@@ -24,16 +24,15 @@ Gem::Specification.new do |spec|
       (f == __FILE__) || f.match(%r{\A(?:(?:bin|test|spec|features)/|\.(?:git|travis|circleci)|appveyor)})
     end
   end
-  spec.bindir = "exe"
-  spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
-  spec.require_paths = ["lib"]
+  spec.require_paths = ['lib']
 
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
 
-  spec.add_dependency "jekyll", '>= 4.0', '< 5.0'
-  spec.add_dependency "liquid", '~> 4.0'
-  spec.add_dependency "shi-args", "~> 0.3.3.4"
+  spec.add_dependency 'jekyll', '>= 4.0', '< 5.0'
+  spec.add_dependency 'liquid', '~> 4.0'
+  spec.add_dependency 'shi-args', '~> 0.3.3.5'
+  spec.add_dependency 'shi-tools', '~> 0.1.0'
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

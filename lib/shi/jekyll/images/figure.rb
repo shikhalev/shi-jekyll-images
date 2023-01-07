@@ -94,11 +94,15 @@ class Shi::Jekyll::FigureBlock < Liquid::Block
     fig_class += " __shape_#{shape}" if String === shape
     fig_class += " __place_#{place}"
     fig_class += " #{cls}" if cls
-    fig_attrs = " class=\"#{fig_class}\""
+
     fig_style = style || ''
     fig_style += "max-width:#{width};" if width
     fig_style += "shape-outside:url(#{relative_url(shape)});" if Jekyll::StaticFile === shape
-    fig_attrs += " style=\"#{fig_style}\""
+
+    fig_attrs = ''
+    fig_attrs += " id=\"#{id}\"" if id != nil
+    fig_attrs += " class=\"#{fig_class}\""
+    fig_attrs += " style=\"#{fig_style}\"" if fig_style != ''
     if wrp_class
       wrp_class = "shi_figure_wrapper #{wrp_class}"
     else
