@@ -1,11 +1,11 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 require_relative 'lib/shi/jekyll/images/version'
 
 Gem::Specification.new do |spec|
   spec.name = 'shi-jekyll-images'
   spec.version = Shi::Jekyll::Images::VERSION
-  spec.authors = ['Иван Шихалев']
+  spec.authors = ['Ivan Shikhalev']
   spec.email = ['shikhalev@gmail.com']
 
   spec.summary = 'Jekyll plugin for image manipulation'
@@ -15,7 +15,6 @@ Gem::Specification.new do |spec|
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/shikhalev/shi-jekyll-images'
-  spec.metadata['changelog_uri'] = 'https://github.com/shikhalev/shi-jekyll-images/blob/main/CHANGELOG.md'
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
