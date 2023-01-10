@@ -2,6 +2,7 @@
 
 require 'pp'   # TODO: remove for release
 
+require 'fileutils'
 require 'liquid'
 require 'jekyll'
 require 'shi/tools'
