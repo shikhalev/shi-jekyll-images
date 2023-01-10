@@ -15,7 +15,7 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
 
   def get_target_dir context
     page = context.registers[:page]
-    result = lookup(context, 'site.shi_images.path') || 'img'
+    result = context['site.shi_images.path'] || 'img'
     by_url = true
     if page['date']
       result = Jekyll::PathManager::join result, page['date'].strftime('%Y/%m/%d')
@@ -60,7 +60,7 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
     end
   end
 
-  def generate_picture context, source, bounds, target_dir
+  def generate_picture context, source, bounds, target_dir, crop = nil
     key = (source.relative_path + '@' + bounds).freeze
     @@generated ||= {}
     if @@generated[key]
@@ -70,19 +70,26 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
     target_name = source.basename + '-' + bounds + '.webp'
     target_path = Jekyll::PathManager::join target_dir, target_name
     target_path_with_leading_slash = Jekyll::PathManager::join '', target_path
-    sf_exists = site.static_files.any? { |f| f.relative_path == target_path || f.relative_path == target_path_with_leading_slash }
-    if !sf_exists || lookup(context, 'site.shi_images.regenerate')
-      cmd = "convert '#{source.relative_path}' #{bounds_to_resize(bounds)} '#{target_path}'"
+    sf = site.static_files.select { |f| f.relative_path == target_path || f.relative_path == target_path_with_leading_slash }.first
+    if !sf || context['site.shi_images.regenerate']
+      cropping = if crop
+          "-crop '#{crop}' "
+        else
+          ''
+        end
+      cmd = "convert '#{source.relative_path}' #{cropping}#{bounds_to_resize(bounds)} '#{target_path}'"
       system(cmd, exception: true)
     end
-    if !sf_exists
-      site.static_files << Jekyll::StaticFile::new(site, site.source, target_dir, target_name)
+    if !sf
+      sf = Jekyll::StaticFile::new(site, site.source, target_dir, target_name)
+      site.static_files << sf
     end
     @@generated[key] = target_path.freeze
+    sf.url
   end
 
   def image_bounds context, args
-    args[:bounds] || lookup_with(context, 'image_bounds', 'page', 'layout', 'site.shi_images') || DEFAULT_BOUNDS
+    args[:bounds] || lookup_with(context, 'image_bounds', ['page', 'layout', 'site.shi_images']) || DEFAULT_BOUNDS
   end
 
   def generate_big_picture context, source, args, target_dir
@@ -99,19 +106,20 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
   end
 
   DEFAULT_THUMB_BOUNDS = '320'
+  DEFAULT_WIDTH = Shi::Args::Value::Measure::px(320)
 
-  def thumb_bounds context, args
+  def thumb_bounds context, args, extra
     bounds = args[:thumb_bounds]
-    width = args[:width]
+    width = args[:width] || extra[:width]
     if width && !bounds
       bounds = width_to_bounds width
     end
-    bounds ||= lookup_with(context, 'thumb_bounds', 'page', 'layout', 'site.shi_images') || DEFAULT_THUMB_BOUNDS
+    bounds ||= lookup_with(context, 'thumb_bounds', ['page', 'layout', 'site.shi_images']) || DEFAULT_THUMB_BOUNDS
     bounds
   end
 
-  def generate_thumbnail context, source, args, target_dir
-    bounds = thumb_bounds context, args
+  def generate_thumbnail context, source, args, extra, target_dir
+    bounds = thumb_bounds context, args, extra
     generate_picture context, source, bounds, target_dir
   end
 
@@ -119,8 +127,9 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
 
   def render context
     args = Shi::Args::Params::parse context, @markup
+    extra_args = context['extra_args'] || {}
 
-    pp args.to_h
+    p args.to_h
 
     source = args[:src] || args[:source]
     if source == nil && Jekyll::StaticFile === args[0]
@@ -167,54 +176,46 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
     end
 
     src = if thumb
-        generate_thumbnail context, source, args, target_dir
+        generate_thumbnail context, source, args, extra_args, target_dir
       else
         href
       end
 
-    Shi::Jekyll::ImageTag::sources[source.relative_path] = source
+    cls = '__image'
+    cls += ' ' + args[:class] if args[:class]
+    cls += ' ' + extra_args[:class] if extra_args[:class]
 
-    # page = context.registers[:page]
-    # base = nil
-    # slug = nil
-    # if page['date']
-    #   base = page['date'].strftime('%Y/%m/%d')
-    # end
-    # if page['slug']
-    #   slug = page['slug']
-    # end
-    # url = page['url']
+    width = args[:width] || extra_args[:width] || DEFAULT_WIDTH
 
-    pp [href, src]
+    style = "max-width:#{width.value};"
+    style += extra_args[:style] if extra_args[:style]
+    style += args[:style] if args[:style]
 
-    nil # TODO: implement
-  end
+    title = args[:title]
+    alt = args[:alt] || title
 
-  class << self
-    def sources
-      @sources ||= {}
-      @sources
+    attrs = "class=\"#{cls}\""
+    attrs += " style=\"#{style}\"" if style
+    attrs += " alt=\"#{alt}\"" if alt
+    attrs += " title=\"#{title}\"" if title
+
+    result = ''
+    if link != false
+      # href = Jekyll::PathManager::join '', href
+      result += "<a href=\"#{href}\" class=\"__image_link\">"
+    end
+    # src = Jekyll::PathManager::join '', src
+    result += "<img src=\"#{src}\" #{attrs}>"
+    if link != false
+      result += '</a>'
     end
 
-    # def delete_file path
-    #   is_dir = File.directory? path
-    #   if !is_dir || Dir.empty?(path)
-    #     FileUtils.rm_r path
-    #     delete_file File.dirname(path)
-    #   end
-    # end
+    p context['page.layout']
+    p context['site.shi_images.regenerate']
 
-    # def clean site
-    #   p site.config
-    #   flag = Shi::Tools::lookup site.config, 'shi_images.clean'
-    #   p flag
-    #   flag = true if flag == nil
-    #   @@generated.each do |_, file|
-    #     path_wuth_leading_slash = Jekyll::PathManager::join '', file
-    #     site.static_files.reject! { | f | f.relative_path == file || f.relative_path == path_wuth_leading_slash }
-    #     delete_file file
-    #   end
-    # end
+    puts result
+
+    result
   end
 end
 
