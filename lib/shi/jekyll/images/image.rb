@@ -61,30 +61,48 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
   end
 
   def generate_picture context, source, bounds, target_dir, crop = nil
-    key = (source.relative_path + '@' + bounds).freeze
+    type = File.extname source.relative_path
+    svg = type.downcase == '.svg'
+    if svg && source.write?
+      return source.url
+    end
+
+    key = (source.relative_path + '@' + (svg ? '' : bounds)).freeze
     @@generated ||= {}
     if @@generated[key]
       return @@generated[key]
     end
+
     site = context.registers[:site]
-    target_name = source.basename + '-' + bounds + '.webp'
+    target_name = source.basename + (svg ? '.svg' : '-' + bounds + '.webp')
     target_path = Jekyll::PathManager::join target_dir, target_name
     target_path_with_leading_slash = Jekyll::PathManager::join '', target_path
     sf = site.static_files.select { |f| f.relative_path == target_path || f.relative_path == target_path_with_leading_slash }.first
     if !sf || context['site.shi_images.regenerate']
-      cropping = if crop
-          "-crop '#{crop}' "
-        else
-          ''
-        end
-      cmd = "convert '#{source.relative_path}' #{cropping}#{bounds_to_resize(bounds)} '#{target_path}'"
+      cmd = nil
+      cmd_src = Jekyll::PathManager::join site.source, source.relative_path
+      cmd_tgt = Jekyll::PathManager::join site.source, target_path
+      if svg
+        # тупо копируем
+        # TODO: разобраться с ресайзом
+        cmd = "cp '#{cmd_src}' '#{cmd_tgt}'"
+      else
+        cropping = if crop
+            "-crop '#{crop}' "
+          else
+            ''
+          end
+        cmd = "convert '#{cmd_src}' #{cropping}#{bounds_to_resize(bounds)} '#{cmd_tgt}'"
+      end
       system(cmd, exception: true)
     end
     if !sf
-      sf = Jekyll::StaticFile::new(site, site.source, target_dir, target_name)
+      tgt_dir = Jekyll::PathManager::join '', target_dir
+      sf = Jekyll::StaticFile::new(site, site.source, tgt_dir, target_name)
       site.static_files << sf
     end
-    @@generated[key] = target_path.freeze
+    @@generated[key] = sf.url.freeze
+    p [sf, sf.url, target_path]
     sf.url
   end
 
@@ -191,15 +209,38 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
     style += extra_args[:style] if extra_args[:style]
     style += args[:style] if args[:style]
 
-    title = args[:title]
+    caption = args[:caption]
+    title = args[:title] || caption
     alt = args[:alt] || title
+    id = args[:id]
 
     attrs = "class=\"#{cls}\""
     attrs += " style=\"#{style}\"" if style
     attrs += " alt=\"#{alt}\"" if alt
     attrs += " title=\"#{title}\"" if title
+    attrs += " id=\"#{id}\""
+
+    figure = args[:figure]
+    if figure && !extra_args.empty?
+      raise ArgumentError, 'Nested figures not allowed!'
+    end
 
     result = ''
+    if figure
+      fig_class = '__figure __implicit_figure'
+      place = args[:place]
+      if place == 'right' || args[:right]
+        fig_class += ' __right'
+      elsif place == 'left' || args[:left]
+        fig_class += ' __left'
+      else
+        fig_class += ' __center'
+      end
+      fig_class += ' ' + args[:fig_class] if args[:fig_class]
+      fig_style = "max-width:#{width.value}"
+      fig_style += args[:fig_style] if args[:fig_style]
+      result += "<figure class=\"#{fig_class}\" style=\"#{fig_style}\">"
+    end
     if link != false
       # href = Jekyll::PathManager::join '', href
       result += "<a href=\"#{href}\" class=\"__image_link\">"
@@ -209,11 +250,12 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
     if link != false
       result += '</a>'
     end
-
-    p context['page.layout']
-    p context['site.shi_images.regenerate']
-
-    puts result
+    if figure
+      if caption
+        result += "<figcaption markdown=\"span\">#{caption}</figcaption>"
+      end
+      result += '</figure>'
+    end
 
     result
   end
