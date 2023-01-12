@@ -25,18 +25,13 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
   DEFAULT_WIDTH = Shi::Args::Value::Measure::px(320)
 
   def thumb_bounds context, args, extra
-    bounds = args[:thumb_bounds]
+    bounds = args[:thumb_bounds] || extra[:thumb_bounds]
     width = args[:width] || extra[:width]
     if width && !bounds
       bounds = width_to_bounds width
     end
     bounds ||= lookup_with(context, 'thumb_bounds', ['page', 'layout', 'site.shi_images']) || DEFAULT_THUMB_BOUNDS
     bounds
-  end
-
-  def generate_thumbnail context, source, args, extra, target_dir
-    bounds = thumb_bounds context, args, extra
-    generate_picture context, source, bounds, target_dir
   end
 
   def render context

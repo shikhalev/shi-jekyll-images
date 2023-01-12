@@ -87,19 +87,19 @@ class Shi::Jekyll::Images::WebPFile < Jekyll::StaticFile
   def resizing bounds
     case bounds.upcase
     when 'HD', '720P'
-      '-resize 1280x720>'
+      "-resize '1280x720>'"
     when 'FULLHD', 'FHD', '1080P'
-      '-resize 1920x1080>'
+      "-resize '1920x1080>'"
     when 'WYXGA', '1200P'
-      '-resize 1920x1200>'
+      "-resize '1920x1200>'"
     when '2K', 'QUADHD', 'QHD', 'WQHD', '1440P'
-      '-resize 2560x1440>'
+      "-resize '2560x1440>'"
     when '4K', 'ULTRAHD', 'UHD', '2160P'
-      '-resize 3840x2160>'
+      "-resize '3840x2160>'"
     when '5K', '2880P'
-      '-resize 5120x2880>'
+      "-resize '5120x2880>'"
     when '8K', '4320P'
-      '-resize 7680x4320>'
+      "-resize '7680x4320>'"
     when 'SOURCE', 'ORIGINAL', 'ORIGIN', 'NONE'
       ''
     else
