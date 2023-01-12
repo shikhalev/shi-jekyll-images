@@ -1,16 +1,9 @@
 # frozen_string_literal: true
 
-require 'digest'
-
 require_relative 'version'
+require_relative 'files'
 
 class Shi::Jekyll::ImageTag < Liquid::Tag
-  # class TargetFile < Jekyll::StaticFile
-  #   def write(dest)
-  #     true # Recover from strange exception when starting server without --auto
-  #   end
-  # end
-
   include Shi::Tools
 
   def width_to_bounds width
@@ -38,8 +31,6 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
     args = Shi::Args::Params::parse context, @markup
     extra_args = context['extra_args'] || {}
 
-    p args.to_h
-
     source = args[:src] || args[:source]
     if source == nil && Jekyll::StaticFile === args[0]
       source = args[0]
@@ -55,12 +46,8 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
 
     site = context.registers[:site]
     page_path = context['page.path']
-    #page_path_with_
     page = site.documents.find { |d| d.relative_path == page_path }
     page ||= site.pages.find { |p| p.relative_path == page_path }
-
-    p context['page.path']
-    pp page
 
     href = if link == false # nothing
         gen_big = false
@@ -170,8 +157,7 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
       result += '</figure>'
     end
 
-    puts "IMAGE: #{result}"
-    pp Jekyll::configuration
+    puts "IMG: #{result}"
 
     result
   end
@@ -183,22 +169,22 @@ Liquid::Template.register_tag 'image', Shi::Jekyll::ImageTag
 #   Shi::Jekyll::ImageTag::clean site
 # end
 
-Jekyll::Hooks::register :pages, :pre_render do |*args|
-  #  puts "PAGE: #{args[0].class}: #{args[0].url}"
-  #  pp args[0].data
-  if args[0].data['image']
-    args[0].data['image'] = '/img/about/girl-1920x1080.webp'
-  end
-  #  pp args[1]
-  # puts 'PAGES:'
-  # pp args.map { |i| i.class }
-end
+# Jekyll::Hooks::register :pages, :pre_render do |*args|
+#   #  puts "PAGE: #{args[0].class}: #{args[0].url}"
+#   #  pp args[0].data
+#   if args[0].data['image']
+#     args[0].data['image'] = '/img/about/girl-1920x1080.webp'
+#   end
+#   #  pp args[1]
+#   # puts 'PAGES:'
+#   # pp args.map { |i| i.class }
+# end
 
-Jekyll::Hooks::register :documents, :pre_render do |*args|
-  #  puts "DOCUMENT: #{args[0].class}: #{args[0].url}"
-  #  pp args[0].data
-  if args[0].data['image']
-    args[0].data['image'] = '/img/about/girl-1920x1080.webp'
-  end
-  #  pp args[1]
-end
+# Jekyll::Hooks::register :documents, :pre_render do |*args|
+#   #  puts "DOCUMENT: #{args[0].class}: #{args[0].url}"
+#   #  pp args[0].data
+#   if args[0].data['image']
+#     args[0].data['image'] = '/img/about/girl-1920x1080.webp'
+#   end
+#   #  pp args[1]
+# end

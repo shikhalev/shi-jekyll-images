@@ -40,8 +40,8 @@ end
       result = Jekyll::PathManager::join result, page.date.strftime('%Y/%m/%d')
       by_url = false
     end
-    if page.respond_to?(:slug) && page.slug != nil
-      result = Jekyll::PathManager::join result, page.slug
+    if page.respond_to?(:data) && page.data['slug'] != nil
+      result = Jekyll::PathManager::join result, page.data['slug']
       by_url = false
     end
     if by_url

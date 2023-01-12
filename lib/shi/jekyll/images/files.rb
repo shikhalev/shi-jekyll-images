@@ -78,7 +78,7 @@ class Shi::Jekyll::Images::WebPFile < Jekyll::StaticFile
 
   def cropping crop
     if crop
-      "-crop '#{crop}'"
+      "-crop '#{crop}' +repage -flatten"
     else
       ''
     end
