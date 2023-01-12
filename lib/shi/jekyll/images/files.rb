@@ -55,6 +55,8 @@ class Shi::Jekyll::Images::WebPFile < Jekyll::StaticFile
       if result == nil
         result = new path(page, source, bounds, crop), source, bounds, crop
         @@created[key] = result
+      end
+      if !site.static_files.include?(result)
         site.static_files << result
       end
       result
@@ -70,6 +72,10 @@ class Shi::Jekyll::Images::WebPFile < Jekyll::StaticFile
     @wp_bounds = bounds
     @wp_crop = crop
     super site, site.source, File.dirname(path), File.basename(path)
+  end
+
+  def modified?
+    true
   end
 
   def write?
@@ -145,6 +151,8 @@ class Shi::Jekyll::Images::SVGFile < Jekyll::StaticFile
       if result == nil
         result = new path(page, source), source
         @@created[key] = result
+      end
+      if !site.static_files.include?(result)
         site.static_files << result
       end
       result
@@ -158,6 +166,10 @@ class Shi::Jekyll::Images::SVGFile < Jekyll::StaticFile
     @wp_path = path
     @wp_source = source
     super site, site.source, File.dirname(path), File.basename(path)
+  end
+
+  def modified?
+    true
   end
 
   def write?
