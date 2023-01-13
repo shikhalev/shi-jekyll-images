@@ -62,21 +62,20 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
       elsif Jekyll::StaticFile === link && !link.write? # uncopyable static file => picture
         gen_big = false
         bounds = args[:bounds] || extra_args[:bounds]
-        Shi::Jekyll::Images::File::create(page, link, bounds, nil).url
+        Jekyll::PathManager::join '', Shi::Jekyll::Images::File::create(page, link, bounds, nil).url
       elsif link.respond_to?(:url) && link.url # document, page or static file
         gen_big = false
-        link.url
+        Jekyll::PathManager::join '', link.url
       elsif String === link # external link
         gen_big = false
         link
       elsif link == true # generated big picture
         gen_big = true
         bounds = args[:bounds] || extra_args[:bounds]
-        Shi::Jekyll::Images::File::create(page, source, bounds, nil).url
+        Jekyll::PathManager::join '', Shi::Jekyll::Images::File::create(page, source, bounds, nil).url
       else
         raise ArgumentError, "Invalid link: #{link.inspect}!"
       end
-    href = Jekyll::PathManager::join '', href
 
     thumb = args[:thumb]
     thumb = false if args[:no_thumb]
@@ -144,7 +143,7 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
         fig_class += ' __center'
       end
       fig_class += ' ' + args[:fig_class] if args[:fig_class]
-      fig_style = "max-width:#{width.value}"
+      fig_style = "max-width:#{width.value};"
       fig_style += args[:fig_style] if args[:fig_style]
       result += "<figure class=\"#{fig_class}\" style=\"#{fig_style}\" markdown=\"0\">"
     end
