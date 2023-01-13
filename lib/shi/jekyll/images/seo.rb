@@ -20,7 +20,7 @@ module Shi::Jekyll::Images::SEO
         if file
           bounds = get_value(page, 'seo_image_bounds') || '640x640'
           crop = get_value(page, 'seo_image_crop') || '500:261+0+0'
-          result = Shi::Jekyll::Images::File::create page, file, bounds, crop
+          result = Shi::Jekyll::Images::WebPFile::create page, file, bounds, crop
           page.data['image'] = result.url
         end
       end
