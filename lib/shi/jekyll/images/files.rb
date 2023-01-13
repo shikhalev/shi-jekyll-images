@@ -113,19 +113,23 @@ class Shi::Jekyll::Images::WebPFile < Jekyll::StaticFile
     end
   end
 
+  def qualiting
+    '-strip -quality 80 -define webp:lossless=false -define webp:auto-filter=true'
+  end
+
   def write dest
     tgt_path = destination dest
     src_path = File::join site.source, @wp_source.relative_path
 
     FileUtils::mkdir_p(File.dirname(tgt_path))
     FileUtils::rm(tgt_path) if File.exist?(tgt_path)
-    cmd = "convert '#{src_path}' #{cropping(@wp_crop)} #{resizing(@wp_bounds)} '#{tgt_path}'"
+    cmd = "convert '#{src_path}' #{cropping(@wp_crop)} #{resizing(@wp_bounds)} #{qualiting} '#{tgt_path}'"
     system(cmd, exception: true)
 
     true
   end
 
-  private :cropping, :resizing
+  private :cropping, :resizing, :qualiting
 end
 
 class Shi::Jekyll::Images::SVGFile < Jekyll::StaticFile
