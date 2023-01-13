@@ -50,7 +50,6 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
 
     site = context.registers[:site]
     page_path = clean_path(context['page.path'])
-    p ['PAGE PATH', page_path]
     if page_path == nil
       p context.registers[:page]
     end
