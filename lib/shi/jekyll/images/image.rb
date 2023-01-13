@@ -108,7 +108,7 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
     shape = args[:shape] || extra_args[:shape]
     case shape
     when Jekyll::StaticFile
-      style += "shape-outside:url(#{generate_thumbnail context, shape, args, extra_args, target_dir});"
+      style += "shape-outside:url(#{generate_thumbnail context, shape, args, extra_args, target_dir});" # TODO: тут лажа
     when String
       cls += " __shape_#{shape}"
     when true
@@ -145,7 +145,15 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
       fig_class += ' ' + args[:fig_class] if args[:fig_class]
       fig_style = "max-width:#{width.value};"
       fig_style += args[:fig_style] if args[:fig_style]
-      result += "<figure class=\"#{fig_class}\" style=\"#{fig_style}\" markdown=\"0\">"
+      case shape
+      when Jekyll::StaticFile
+        fig_style += "shape-outside:url(#{generate_thumbnail context, shape, args, extra_args, target_dir});" # TODO: тут лажа
+      when String
+        fig_class += " __shape_#{shape}"
+      when true
+        fig_style += "shape-outside:url(#{src});"
+      end
+        result += "<figure class=\"#{fig_class}\" style=\"#{fig_style}\" markdown=\"0\">"
     end
     if link != false
       # href = Jekyll::PathManager::join '', href
