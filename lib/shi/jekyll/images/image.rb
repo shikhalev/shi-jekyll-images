@@ -27,6 +27,10 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
     bounds
   end
 
+  def clean_path path
+    path.split(/\/?#/)[0]
+  end
+
   def render context
     args = Shi::Args::Params::parse context, @markup
     extra_args = context['extra_args'] || {}
@@ -45,7 +49,11 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
     # if link == false only thumbnail needed
 
     site = context.registers[:site]
-    page_path = context['page.path']
+    page_path = clean_path(context['page.path'])
+    p ['PAGE PATH', page_path]
+    if page_path == nil
+      p context.registers[:page]
+    end
     page = site.documents.find { |d| d.relative_path == page_path }
     page ||= site.pages.find { |p| p.relative_path == page_path }
 
@@ -139,7 +147,7 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
       fig_class += ' ' + args[:fig_class] if args[:fig_class]
       fig_style = "max-width:#{width.value}"
       fig_style += args[:fig_style] if args[:fig_style]
-      result += "<figure class=\"#{fig_class}\" style=\"#{fig_style}\">"
+      result += "<figure class=\"#{fig_class}\" style=\"#{fig_style}\" markdown=\"0\">"
     end
     if link != false
       # href = Jekyll::PathManager::join '', href
@@ -156,8 +164,6 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
       end
       result += '</figure>'
     end
-
-    puts "IMG: #{result}"
 
     result
   end

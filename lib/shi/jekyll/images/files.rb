@@ -42,7 +42,7 @@ class Shi::Jekyll::Images::WebPFile < Jekyll::StaticFile
     end
 
     def default_bounds page
-      get_value(page, 'images_bounds') || 'ORIGINAL'
+      get_value(page, 'image_bounds') || 'ORIGINAL'
     end
 
     def create page, source, bounds, crop
