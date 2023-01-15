@@ -108,7 +108,14 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
     shape = args[:shape] || extra_args[:shape]
     case shape
     when Jekyll::StaticFile
-      style += "shape-outside:url(#{generate_thumbnail context, shape, args, extra_args, target_dir});" # TODO: тут лажа
+      shape_url = if shape.write?
+          shape.url
+        else
+          bounds = thumb_bounds context, args, extra_args
+          crop = args[:crop] || extra_args[:crop]
+          Jekyll::PathManager::join '', Shi::Jekyll::Images::File::create(page, shape, bounds, crop).url
+        end
+      style += "shape-outside:url(#{shape_url});"
     when String
       cls += " __shape_#{shape}"
     when true
@@ -147,13 +154,20 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
       fig_style += args[:fig_style] if args[:fig_style]
       case shape
       when Jekyll::StaticFile
-        fig_style += "shape-outside:url(#{generate_thumbnail context, shape, args, extra_args, target_dir});" # TODO: тут лажа
+        shape_url = if shape.write?
+            shape.url
+          else
+            bounds = thumb_bounds context, args, extra_args
+            crop = args[:crop] || extra_args[:crop]
+            Jekyll::PathManager::join '', Shi::Jekyll::Images::File::create(page, shape, bounds, crop).url
+          end
+        fig_style += "shape-outside:url(#{shape_url});"
       when String
         fig_class += " __shape_#{shape}"
       when true
         fig_style += "shape-outside:url(#{src});"
       end
-        result += "<figure class=\"#{fig_class}\" style=\"#{fig_style}\" markdown=\"0\">"
+      result += "<figure class=\"#{fig_class}\" style=\"#{fig_style}\" markdown=\"0\">"
     end
     if link != false
       # href = Jekyll::PathManager::join '', href

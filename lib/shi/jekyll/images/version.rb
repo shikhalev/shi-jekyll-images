@@ -11,7 +11,7 @@ require 'shi/args'
 module Shi
   module Jekyll
     module Images
-      VERSION = '0.1.0.5'
+      VERSION = '0.1.0.6'
     end
   end
 end
