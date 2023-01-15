@@ -98,7 +98,7 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
 
     width = args[:width] || extra_args[:width] || DEFAULT_WIDTH
 
-    style = "max-width:#{width.value};"
+    style = ""
     style += extra_args[:style] if extra_args[:style]
     style += args[:style] if args[:style]
 
@@ -125,7 +125,7 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
     id = args[:id]
 
     attrs = "class=\"#{cls}\""
-    attrs += " style=\"#{style}\"" if style
+    attrs += " style=\"#{style}\"" if style && !style.empty?
     attrs += " alt=\"#{alt}\"" if alt
     attrs += " title=\"#{title}\"" if title
     attrs += " id=\"#{id}\""
