@@ -56,18 +56,15 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
     page = site.documents.find { |d| d.relative_path == page_path }
     page ||= site.pages.find { |p| p.relative_path == page_path }
 
+    gen_big = false
     href = if link == false # nothing
-        gen_big = false
         nil
       elsif Jekyll::StaticFile === link && !link.write? # uncopyable static file => picture
-        gen_big = false
         bounds = args[:bounds] || extra_args[:bounds]
         Jekyll::PathManager::join '', Shi::Jekyll::Images::File::create(page, link, bounds, nil).url
       elsif link.respond_to?(:url) && link.url # document, page or static file
-        gen_big = false
         Jekyll::PathManager::join '', link.url
       elsif String === link # external link
-        gen_big = false
         link
       elsif link == true # generated big picture
         gen_big = true
@@ -170,8 +167,11 @@ class Shi::Jekyll::ImageTag < Liquid::Tag
       result += "<figure class=\"#{fig_class}\" style=\"#{fig_style}\" markdown=\"0\">"
     end
     if link != false
-      # href = Jekyll::PathManager::join '', href
-      result += "<a href=\"#{href}\" class=\"__image_link\">"
+      if gen_big
+        result += "<a href=\"#{href}\" class=\"__image_link\">"
+      else
+        result += "<a href=\"#{href}\">"
+      end
     end
     # src = Jekyll::PathManager::join '', src
     result += "<img src=\"#{src}\" #{attrs}>"
