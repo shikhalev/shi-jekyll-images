@@ -93,28 +93,28 @@ class Shi::Jekyll::Images::WebPFile < Jekyll::StaticFile
   def resizing bounds
     case bounds.upcase
     when 'HD', '720P'
-      "-resize '1280x720>'"
+      "-adaptive-resize '1280x720>'"
     when 'FULLHD', 'FHD', '1080P'
-      "-resize '1920x1080>'"
+      "-adaptive-resize '1920x1080>'"
     when 'WYXGA', '1200P'
-      "-resize '1920x1200>'"
+      "-adaptive-resize '1920x1200>'"
     when '2K', 'QUADHD', 'QHD', 'WQHD', '1440P'
-      "-resize '2560x1440>'"
+      "-adaptive-resize '2560x1440>'"
     when '4K', 'ULTRAHD', 'UHD', '2160P'
-      "-resize '3840x2160>'"
+      "-adaptive-resize '3840x2160>'"
     when '5K', '2880P'
-      "-resize '5120x2880>'"
+      "-adaptive-resize '5120x2880>'"
     when '8K', '4320P'
-      "-resize '7680x4320>'"
+      "-adaptive-resize '7680x4320>'"
     when 'SOURCE', 'ORIGINAL', 'ORIGIN', 'NONE'
       ''
     else
-      "-resize '#{bounds}>'"
+      "-adaptive-resize '#{bounds}>'"
     end
   end
 
   def qualiting
-    '-strip -quality 80 -define webp:lossless=false -define webp:auto-filter=true'
+    '-strip -quality 90 -define webp:auto-filter=true'
   end
 
   def write dest
