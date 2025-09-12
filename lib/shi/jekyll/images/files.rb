@@ -125,7 +125,7 @@ class Shi::Jekyll::Images::WebPFile < Jekyll::StaticFile
     FileUtils::mkdir_p(File.dirname(tgt_path))
     FileUtils::rm(tgt_path) if File.exist?(tgt_path)
     cmd = "convert '#{src_path}' #{cropping(@wp_crop)} #{resizing(@wp_bounds)} #{qualiting} '#{tgt_path}'"
-    system(cmd, exception: true)
+    system(cmd, exception: true, err: '/dev/null')
 
     true
   end

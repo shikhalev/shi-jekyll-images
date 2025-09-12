@@ -2,5 +2,7 @@
 
 source "https://rubygems.org"
 
+gem 'liquid', '~> 4.0'
+
 # Specify your gem's dependencies in shi-jekyll-images.gemspec
 gemspec

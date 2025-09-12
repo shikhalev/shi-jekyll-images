@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 require_relative 'version'
+require 'fileutils'
+require 'liquid'
+require 'jekyll'
+require 'shi/tools'
+require 'shi/args'
 require_relative 'files'
 
 class Shi::Jekyll::ImageTag < Liquid::Tag

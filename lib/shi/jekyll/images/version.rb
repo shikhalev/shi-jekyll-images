@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
-require 'pp'   # TODO: remove for release
+# require 'pp'   # TODO: remove for release
 
-require 'fileutils'
-require 'liquid'
-require 'jekyll'
-require 'shi/tools'
-require 'shi/args'
+# require 'fileutils'
+# require 'liquid'
+# require 'jekyll'
+# require 'shi/tools'
+# require 'shi/args'
 
 module Shi
   module Jekyll
     module Images
-      VERSION = '0.1.0.9'
+      VERSION = '0.1.0.10'
     end
   end
 end

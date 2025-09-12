@@ -1,5 +1,18 @@
 # frozen_string_literal: true
 
+require 'warning'
+
+gem_paths = Gem.path.flat_map do |path|
+  Dir.glob("#{path}/gems/*").select do |gem_path|
+    !gem_path.include?("shi-")
+  end
+end
+
+gem_paths.each do |path|
+  Warning.ignore(//, path)
+end
+
+
 module Shi::Jekyll::Images::Config
   def site_config
     @@site_config ||= Jekyll::configuration || {}
@@ -26,7 +39,7 @@ module Shi::Jekyll::Images::Config
       result = config[name]
     end
     result
-end
+  end
 
   def site
     Jekyll::sites.first
