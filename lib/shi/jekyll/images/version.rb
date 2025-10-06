@@ -11,7 +11,7 @@
 module Shi
   module Jekyll
     module Images
-      VERSION = '0.1.0.13'
+      VERSION = '0.1.0.14'
     end
   end
 end
