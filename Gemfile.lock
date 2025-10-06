@@ -1,11 +1,12 @@
 PATH
   remote: .
   specs:
-    shi-jekyll-images (0.1.0.9)
+    shi-jekyll-images (0.1.0.10)
       jekyll (>= 4.0, < 5.0)
       liquid (~> 4.0)
       shi-args (~> 0.3.4.2)
       shi-tools (~> 0.2.0)
+      warning
 
 GEM
   remote: https://rubygems.org/
@@ -145,6 +146,7 @@ GEM
     terminal-table (3.0.2)
       unicode-display_width (>= 1.1.1, < 3)
     unicode-display_width (2.6.0)
+    warning (1.5.0)
     webrick (1.9.1)
 
 PLATFORMS
@@ -173,4 +175,4 @@ DEPENDENCIES
   shi-jekyll-images!
 
 BUNDLED WITH
-   2.7.1
+   2.7.2
