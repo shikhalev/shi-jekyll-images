@@ -75,11 +75,14 @@ class Shi::Jekyll::Images::WebPFile < Jekyll::StaticFile
   end
 
   def modified?
-    true
+    src_path = File.join(site.source, @wp_source.relative_path)
+    tgt_path = destination site.dest
+    return true unless File.exist?(tgt_path) && File.exist?(src_path)
+    File.mtime(src_path) > File.mtime(tgt_path)
   end
 
   def write?
-    true
+    modified?
   end
 
   def cropping crop
@@ -119,8 +122,12 @@ class Shi::Jekyll::Images::WebPFile < Jekyll::StaticFile
   end
 
   def write dest
+    return true if !write?
+
     tgt_path = destination dest
     src_path = File::join site.source, @wp_source.relative_path
+
+    return false unless File.exist?(src_path)
 
     FileUtils::mkdir_p(File.dirname(tgt_path))
     FileUtils::rm(tgt_path) if File.exist?(tgt_path)
@@ -174,14 +181,19 @@ class Shi::Jekyll::Images::SVGFile < Jekyll::StaticFile
   end
 
   def modified?
-    true
+    src_path = File.join(site.source, @wp_source.relative_path)
+    tgt_path = destination site.dest
+    return true unless File.exist?(tgt_path)
+    File.mtime(src_path) > File.mtime(tgt_path)
   end
 
   def write?
-    true
+    modified?
   end
 
   def write dest
+    return true if !write?
+
     tgt_path = destination dest
     src_path = File::join site.source, @wp_source.relative_path
 
