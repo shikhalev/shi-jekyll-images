@@ -75,11 +75,14 @@ class Shi::Jekyll::Images::WebPFile < Jekyll::StaticFile
   end
 
   def modified?
-    true
+    src_path = File.join(site.source, @wp_source.relative_path)
+    tgt_path = File.join(site.dest, relative_path)
+    return true unless File.exist?(src_path) && File.exist?(tgt_path)
+    File.mtime(src_path) > File.mtime(tgt_path)
   end
 
   def write?
-    true
+    modified?  # Записываем только если файл изменён
   end
 
   def cropping crop
@@ -119,11 +122,13 @@ class Shi::Jekyll::Images::WebPFile < Jekyll::StaticFile
   end
 
   def write dest
-    tgt_path = destination dest
-    src_path = File::join site.source, @wp_source.relative_path
+    return true unless modified?  # Пропускаем, если файл не изменён
 
-    FileUtils::mkdir_p(File.dirname(tgt_path))
-    FileUtils::rm(tgt_path) if File.exist?(tgt_path)
+    tgt_path = destination dest
+    src_path = File.join site.source, @wp_source.relative_path
+
+    FileUtils.mkdir_p(File.dirname(tgt_path))
+    FileUtils.rm(tgt_path) if File.exist?(tgt_path)  # Удаляем только если существует
     cmd = "convert '#{src_path}' #{cropping(@wp_crop)} #{resizing(@wp_bounds)} #{qualiting} '#{tgt_path}'"
     system(cmd, exception: true, err: '/dev/null')
 
@@ -174,20 +179,25 @@ class Shi::Jekyll::Images::SVGFile < Jekyll::StaticFile
   end
 
   def modified?
-    true
+    src_path = File.join(site.source, @wp_source.relative_path)
+    tgt_path = File.join(site.dest, relative_path)
+    return true unless File.exist?(src_path) && File.exist?(tgt_path)
+    File.mtime(src_path) > File.mtime(tgt_path)
   end
 
   def write?
-    true
+    modified?  # Записываем только если файл изменён
   end
 
   def write dest
-    tgt_path = destination dest
-    src_path = File::join site.source, @wp_source.relative_path
+    return true unless modified?  # Пропускаем, если файл не изменён
 
-    FileUtils::mkdir_p(File.dirname(tgt_path))
-    FileUtils::rm(tgt_path) if File.exist?(tgt_path)
-    FileUtils::cp(src_path, tgt_path)
+    tgt_path = destination dest
+    src_path = File.join site.source, @wp_source.relative_path
+
+    FileUtils.mkdir_p(File.dirname(tgt_path))
+    FileUtils.rm(tgt_path) if File.exist?(tgt_path)  # Удаляем только если существует
+    FileUtils.cp(src_path, tgt_path)
 
     true
   end
